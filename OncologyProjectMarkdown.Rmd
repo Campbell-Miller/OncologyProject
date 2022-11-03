@@ -1,0 +1,900 @@
+---
+title: "Trends Analysis"
+author: "Campbell Miller"
+date: "2022-11-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+pacman::p_load(ggplot2, here, dplyr, readr, readxl, tidyverse, broom, scales, gsubfn, stringr, ggthemes, viridis)
+
+data <- read.csv('CaseStudy.csv')
+```
+
+```{r}
+glimpse(data)
+
+dim(data)
+str(data)
+
+
+unique(data$Date.of.Service)
+unique(data$Month.of.Service)
+unique(data$Quarter.of.Service)
+unique(data$Payment.Amount )
+unique(data$Payer)
+unique(data$Provider.Name)
+unique(data$Service.Type )
+unique(data$Service.Subtype)
+unique(data$Clinic.Location)
+unique(data$CPT)
+unique(data$Patient.Diagnosis)
+unique(data$New.Patient.Indicator)
+unique(data$Referral.Source)
+```
+
+```{r}
+#data1 is only chemo infusion for provider 1
+data1 <- data
+data1 <- filter(data1, Service.Subtype == "Chemotherapy Infusion")
+data1 <- filter(data1, Provider.Name == "Provider 1")
+
+data1 <- data1 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+
+data1$Quarter.of.Service <- factor(data1$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+table(data1$Quarter.of.Service)
+```
+
+
+```{r}
+#data2 is only chemo infusion for Provider 2
+data2 <- data
+data2 <- filter(data2, Service.Subtype == "Chemotherapy Infusion") #| Service.Subtype == "Non-Chemotherapy Infusion")
+data2 <- filter(data2, Provider.Name == "Provider 2")
+
+data2 <- data2 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+#this code reorganizes the dates 
+data2$Quarter.of.Service <- factor(data2$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+table(data2$Quarter.of.Service)
+
+#this code is used to make a nonchemo data set for provider 2
+data22 <- data
+data22 <- filter(data22, Service.Subtype == "Non-Chemotherapy Infusion")
+data22 <- filter(data22, Provider.Name == "Provider 2")
+
+data22 <- data22 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                         ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+data22$Quarter.of.Service <- factor(data22$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+#chemo graph
+ggplot(data2, aes(x = Quarter.of.Service, y = Quarter.of.Service1)) + 
+  geom_bar(stat = "identity")
+#non chemo graph
+ggplot(data22, aes(x = Quarter.of.Service, y = Quarter.of.Service1)) + 
+  geom_bar(stat = "identity") 
+
+#sums <- data2 %>%
+ # group_by(Quarter.of.Service) %>%
+  #summarize(Total = sum(Quarter.of.Service1))
+
+```
+
+```{r}
+data3 <- data
+data3 <- filter(data3, Service.Subtype == "Chemotherapy Infusion")
+data3 <- filter(data3, Provider.Name == "Provider 3")
+
+data3 <- data3 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+
+data3$Quarter.of.Service <- factor(data3$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+table(data3$Quarter.of.Service)
+```
+
+```{r}
+data4 <- data
+data4 <- filter(data4, Service.Subtype == "Chemotherapy Infusion")
+data4 <- filter(data4, Provider.Name == "Provider 4")
+
+data4 <- data4 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+
+data4$Quarter.of.Service <- factor(data4$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+table(data4$Quarter.of.Service)
+```
+
+```{r}
+data5 <- data
+data5 <- filter(data5, Service.Subtype == "Chemotherapy Infusion")
+data5 <- filter(data5, Provider.Name == "Provider 5")
+
+data5 <- data5 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+
+data5$Quarter.of.Service <- factor(data5$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+table(data5$Quarter.of.Service)
+```
+
+```{r}
+data6 <- data
+data6 <- filter(data6, Service.Subtype == "Chemotherapy Infusion")
+data6 <- filter(data6, Provider.Name == "Provider 6")
+
+data6 <- data6 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+
+data6$Quarter.of.Service <- factor(data6$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+table(data6$Quarter.of.Service)
+```
+
+```{r}
+data7 <- data
+data7 <- filter(data7, Service.Subtype == "Chemotherapy Infusion")
+data7 <- filter(data7, Provider.Name == "Provider 7")
+
+data7 <- data7 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+
+data7$Quarter.of.Service <- factor(data7$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+table(data7$Quarter.of.Service)
+```
+
+```{r}
+data8 <- data
+data8 <- filter(data8, Service.Subtype == "Chemotherapy Infusion")
+data8 <- filter(data8, Provider.Name == "Provider 8")
+
+data8 <- data8 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+
+data8$Quarter.of.Service <- factor(data8$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+table(data8$Quarter.of.Service)
+```
+
+
+
+```{r}
+table(data1$Quarter.of.Service)
+table(data2$Quarter.of.Service)
+table(data3$Quarter.of.Service)
+table(data4$Quarter.of.Service)
+table(data5$Quarter.of.Service)
+table(data6$Quarter.of.Service)
+table(data7$Quarter.of.Service)
+table(data8$Quarter.of.Service)
+```
+
+
+
+
+```{r}
+#total drug admin per oncologist making datafarmes for each
+totaldrug1 <- data
+totaldrug1 <- filter(totaldrug1, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+totaldrug1 <- filter(totaldrug1, Provider.Name == "Provider 1") 
+
+totaldrug2 <- data
+totaldrug2 <- filter(totaldrug2, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+totaldrug2 <- filter(totaldrug2, Provider.Name == "Provider 2") 
+
+totaldrug3 <- data
+totaldrug3 <- filter(totaldrug3, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+totaldrug3 <- filter(totaldrug3, Provider.Name == "Provider 3") 
+
+totaldrug4 <- data
+totaldrug4 <- filter(totaldrug4, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+totaldrug4 <- filter(totaldrug4, Provider.Name == "Provider 4") 
+
+totaldrug5 <- data
+totaldrug5 <- filter(totaldrug5, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+totaldrug5 <- filter(totaldrug5, Provider.Name == "Provider 5") 
+
+totaldrug6 <- data
+totaldrug6 <- filter(totaldrug6, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+totaldrug6 <- filter(totaldrug6, Provider.Name == "Provider 6") 
+
+totaldrug7 <- data
+totaldrug7 <- filter(totaldrug7, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+totaldrug7 <- filter(totaldrug7, Provider.Name == "Provider 7") 
+
+totaldrug8 <- data
+totaldrug8 <- filter(totaldrug8, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+totaldrug8 <- filter(totaldrug8, Provider.Name == "Provider 8") 
+
+
+
+table(totaldrug1$Service.Subtype)
+table(totaldrug2$Service.Subtype)
+table(totaldrug3$Service.Subtype)
+table(totaldrug4$Service.Subtype)
+table(totaldrug5$Service.Subtype)
+table(totaldrug6$Service.Subtype)
+table(totaldrug7$Service.Subtype)
+table(totaldrug8$Service.Subtype)
+```
+
+```{r}
+drug <- data
+drug <- filter(drug, Service.Subtype == "Chemotherapy Infusion" | Service.Subtype == "Non-Chemotherapy Infusion")
+
+drug <- drug %>%
+   mutate(Provider.Name1 = ifelse(Provider.Name == "Provider 1", 1,
+                                            ifelse(Provider.Name == "Provider 2", 1,
+                                                   ifelse(Provider.Name == "Provider 3", 1,
+                                                          ifelse(Provider.Name == "Provider 4", 1, 
+                                                                 ifelse(Provider.Name == "Provider 5", 1,
+                                                                   ifelse(Provider.Name == "Provider 6", 1,
+                                                                    ifelse(Provider.Name == "Provider 7", 1,
+                                                                       ifelse(Provider.Name == "Provider 8", 1, 0)))))))))
+#graph showing total drug admins per provider based on chemo and non chemo
+ggplot(drug, aes(x = Provider.Name, y = Provider.Name1, fill = factor(Service.Subtype, levels=c("Non-Chemotherapy Infusion", "Chemotherapy Infusion")))) +
+  geom_bar(stat = 'identity') +
+  xlab("") +
+  ylab("Drug Administrations") +
+  ggtitle("Total Drug Administations over 4 Quarters by Provider") +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata() +
+  scale_fill_manual(values = color1, name = "") +
+  labs(fill = "Service.Subtype")
+
+
+#vector for colors you want in the graph
+color1 = c('indianred3', 'cornflowerblue')
+
+table(drug$Provider.Name)
+
+drug1 <- drug %>%
+     mutate(Provider.Name1 = ifelse(Provider.Name == "Provider 1" & Quarter.of.Service == "4/1/2021", 331,
+                             ifelse(Provider.Name == "Provider 1" & Quarter.of.Service == "7/1/2021", 335,
+                             ifelse(Provider.Name == "Provider 1" & Quarter.of.Service == "10/1/2021", 389,
+                             ifelse(Provider.Name == "Provider 1" & Quarter.of.Service == "1/1/2022", 443,
+                              ifelse(Provider.Name == "Provider 2" & Quarter.of.Service == "4/1/2021", 385,
+                              ifelse(Provider.Name == "Provider 2" & Quarter.of.Service == "7/1/2021", 390,
+                              ifelse(Provider.Name == "Provider 2" & Quarter.of.Service == "10/1/2021", 377,
+                              ifelse(Provider.Name == "Provider 2" & Quarter.of.Service == "1/1/2022", 548,                   
+                                ifelse(Provider.Name == "Provider 3" & Quarter.of.Service == "4/1/2021", 626,
+                                ifelse(Provider.Name == "Provider 3" & Quarter.of.Service == "7/1/2021", 408,
+                                ifelse(Provider.Name == "Provider 3" & Quarter.of.Service == "10/1/2021", 433,
+                                ifelse(Provider.Name == "Provider 3" & Quarter.of.Service == "1/1/2022", 407,      
+                                  ifelse(Provider.Name == "Provider 4" & Quarter.of.Service == "4/1/2021", 362,
+                                  ifelse(Provider.Name == "Provider 4" & Quarter.of.Service == "7/1/2021", 318,
+                                  ifelse(Provider.Name == "Provider 4" & Quarter.of.Service == "10/1/2021", 220,
+                                  ifelse(Provider.Name == "Provider 4" & Quarter.of.Service == "1/1/2022", 270,
+                                    ifelse(Provider.Name == "Provider 5" & Quarter.of.Service == "4/1/2021", 226,
+                                    ifelse(Provider.Name == "Provider 5" & Quarter.of.Service == "7/1/2021", 215,
+                                    ifelse(Provider.Name == "Provider 5" & Quarter.of.Service == "10/1/2021", 472,
+                                    ifelse(Provider.Name == "Provider 5" & Quarter.of.Service == "1/1/2022", 507,
+                                      ifelse(Provider.Name == "Provider 6" & Quarter.of.Service == "4/1/2021", 447,
+                                      ifelse(Provider.Name == "Provider 6" & Quarter.of.Service == "7/1/2021", 369,
+                                      ifelse(Provider.Name == "Provider 6" & Quarter.of.Service == "10/1/2021", 274,
+                                      ifelse(Provider.Name == "Provider 6" & Quarter.of.Service == "1/1/2022", 0,
+                                        ifelse(Provider.Name == "Provider 7" & Quarter.of.Service == "4/1/2021", 521,
+                                        ifelse(Provider.Name == "Provider 7" & Quarter.of.Service == "7/1/2021", 529,
+                                        ifelse(Provider.Name == "Provider 7" & Quarter.of.Service == "10/1/2021", 78,
+                                        ifelse(Provider.Name == "Provider 7" & Quarter.of.Service == "1/1/2022", 0,
+                                          ifelse(Provider.Name == "Provider 8" & Quarter.of.Service == "4/1/2021", 239,
+                                          ifelse(Provider.Name == "Provider 8" & Quarter.of.Service == "7/1/2021", 282,
+                                          ifelse(Provider.Name == "Provider 8" & Quarter.of.Service == "10/1/2021", 213,
+                                          ifelse(Provider.Name == "Provider 8" & Quarter.of.Service == "1/1/2022", 180, 0)))))))))))))))))))))))))))))))))
+                                     
+                                     
+drug1$Quarter.of.Service <- factor(drug1$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))                                     
+                                     
+                                  
+#graph showing the change in chemo drug admins per provider through the quarters
+ggplot(drug1, aes(x = Quarter.of.Service, y = Provider.Name1, color = Provider.Name, group = Provider.Name)) +
+  geom_point() +
+  geom_line() +
+  xlab("Quarter of Service") +
+  ylab("Chemo Drug Infusions") +
+  ggtitle("Chemo Drug Administrations by Provider over 4 Quarters") +
+  scale_color_brewer(palette = "Dark2", name = "") +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata()
+  
+
+
+```
+
+
+##KPI'S
+
+//TOTAL DROG ADMINISTRATIONS
+
+1. total drug administrations
+
+2. chemo vs non chemo administrations 
+
+Both 1 and 2 done by graph above
+
+Target: 400 chemo drug administrations per quarter per medical oncologist
+
+Provider 1 (new provider) 1/4 chemo kpi
+  Quarter1 331
+  Quarter2 335
+  Quarter3 389
+  Quarter4 443
+Provider 2 1/4 chemo kpi
+  Quarter1 385
+  Quarter2 390
+  Quarter3 377
+  Quarter4 548
+Provider 3 4/4 chemo kpi
+  Quarter1 626
+  Quarter2 408
+  Quarter3 433
+  Quarter4 407
+Provider 4 0/4 kpi
+  Quarter1 362
+  Quarter2 318
+  Quarter3 220
+  Quarter4 270
+Provider 5 2/4 chemo kpi
+  Quarter1 226
+  Quarter2 215
+  Quarter3 472
+  Quarter4 507
+Provider 6 (leaves 2022) 1/3 chemo kpi
+  Quarter1 447
+  Quarter2 369
+  Quarter3 274
+  Quarter4 0
+Provider 7 (leaves late 2021) 2/2.5 chemo kpi
+  Quarter1 521
+  Quarter2 529
+  Quarter3 78
+  Quarter4 0
+Provider 8 0/4 chemo kpi
+  Quarter1 239
+  Quarter2 282
+  Quarter3 213
+  Quarter4 180
+
+##unique patients seen 
+
+```{r}
+#make data frame that includes only each patient once and shows their diagnosis
+unique <- data %>%
+  group_by(Unique.Patient.ID) %>%
+  distinct(Unique.Patient.ID, .keep_all = TRUE)
+table(unique$Patient.Diagnosis)
+table(unique$Provider.Name)
+#cancer only data
+unique1 <- unique %>%
+  filter(Patient.Diagnosis == "Cancer")
+table(unique1$Provider.Name)
+#non-cancer only data
+unique2 <- unique %>%
+  filter(Patient.Diagnosis == "Non-Cancer")
+table(unique2$Provider.Name)
+
+#this lets me graph the data for some reason
+unique1 <- unique1 %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+#this code reorganizes the dates 
+unique1$Quarter.of.Service <- factor(unique1$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+#graph of number of unique patients with cancer based on quarter
+ggplot(unique1, aes(x = Quarter.of.Service, y = Quarter.of.Service1, fill = Quarter.of.Service)) +
+  geom_bar(stat = "identity", show.legend = FALSE) +
+  xlab("Quarter of Service") +
+  ylab("Unique Patients with Cancer") +
+  ggtitle("Number of Unique Patients with Cancer over 4 Quarters") +
+  scale_fill_manual(values = c("lightcoral", "lightseagreen", "skyblue2", "thistle3")) +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata()
+  
+
+
+
+```
+
+
+//NEW PATIENTS
+```{r}
+newpat <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office")
+
+newpat1 <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office") %>%
+  filter(Provider.Name == "Provider 1")
+
+newpat2 <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office") %>%
+  filter(Provider.Name == "Provider 2")
+
+newpat3 <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office") %>%
+  filter(Provider.Name == "Provider 3")
+
+newpat4 <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office") %>%
+  filter(Provider.Name == "Provider 4")
+
+newpat5 <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office") %>%
+  filter(Provider.Name == "Provider 5")
+
+newpat6 <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office") %>%
+  filter(Provider.Name == "Provider 6")
+
+newpat7 <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office") %>%
+  filter(Provider.Name == "Provider 7")
+
+newpat8 <- data %>%
+  filter(Service.Subtype == "New Patient Visits - Office") %>%
+  filter(Provider.Name == "Provider 8")
+
+newpat1$Quarter.of.Service <- factor(newpat1$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+newpat2$Quarter.of.Service <- factor(newpat2$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+newpat3$Quarter.of.Service <- factor(newpat3$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+newpat4$Quarter.of.Service <- factor(newpat4$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+newpat5$Quarter.of.Service <- factor(newpat5$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+newpat6$Quarter.of.Service <- factor(newpat6$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+newpat7$Quarter.of.Service <- factor(newpat7$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+newpat8$Quarter.of.Service <- factor(newpat8$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+table(newpat1$Quarter.of.Service, newpat1$Patient.Diagnosis)   
+table(newpat2$Quarter.of.Service, newpat2$Patient.Diagnosis)
+table(newpat3$Quarter.of.Service, newpat3$Patient.Diagnosis)
+table(newpat4$Quarter.of.Service, newpat4$Patient.Diagnosis)
+table(newpat5$Quarter.of.Service, newpat5$Patient.Diagnosis)
+table(newpat6$Quarter.of.Service, newpat6$Patient.Diagnosis)
+table(newpat7$Quarter.of.Service, newpat7$Patient.Diagnosis)
+table(newpat8$Quarter.of.Service, newpat8$Patient.Diagnosis)
+
+table(newpat1$Patient.Diagnosis)
+table(newpat2$Patient.Diagnosis)
+table(newpat3$Patient.Diagnosis)
+table(newpat4$Patient.Diagnosis)
+table(newpat5$Patient.Diagnosis)
+table(newpat6$Patient.Diagnosis)
+table(newpat7$Patient.Diagnosis)
+table(newpat8$Patient.Diagnosis)
+
+
+#this lets me graph the data for some reason
+newpat <- newpat %>%
+   mutate(Quarter.of.Service1 = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                          ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+#this code reorganizes the dates 
+newpat$Quarter.of.Service <- factor(newpat$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+#graph of number of new patients based on quarter
+ggplot(newpat, aes(x = Quarter.of.Service, y = Quarter.of.Service1, fill = Quarter.of.Service)) +
+  geom_bar(stat = "identity", show.legend = FALSE) +
+  xlab("Quarter of Service") +
+  ylab("New Patients") +
+  ggtitle("Number of New Patients to all Providers over 4 Quarters") +
+  scale_fill_manual(values = c("lightcoral", "lightseagreen", "skyblue2", "thistle3")) +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata()
+
+
+```
+
+
+TARGET: 80 new patients per quarter per location
+
+Provider 1 (new provider) kpi hit 2/4  53.4%
+  Quarter1 88 (45 c)
+  Quarter2 80 (40 c)
+  Quarter3 45 (26 c)
+  Quarter4 68 (39 c)
+Provider 2 kpi hit 3/4 54%
+  Quarter1 75 (43 c)
+  Quarter2 86 (50 c)
+  Quarter3 109 (51 c)
+  Quarter4 82 (46 c)
+Provider 3 kpi hit 2/4  58.7%
+  Quarter1 91 (56 c)
+  Quarter2 75 (44 c)
+  Quarter3 90 (48 c)
+  Quarter4 76 (47 c)
+Provider 4 kpi hit 1/4  58.2%
+  Quarter1 90 (50 c)
+  Quarter2 73 (36 c)
+  Quarter3 48 (34 c)
+  Quarter4 45 (29 c)
+Provider 5 kpi hit 4/4  39.2%
+  Quarter1 172 (58 c)
+  Quarter2 126 (51 c)
+  Quarter3 194 (76 c)
+  Quarter4 161 (71 c)
+Provider 6 (leaves 2022) kpi hit 2/3  58.7%
+  Quarter1 81 (52 c)
+  Quarter2 74 (36 c)
+  Quarter3 24 (17 c)
+  Quarter4 0 (0)
+Provider 7 (leaves late 2021) kpi hit 2/2  67%
+  Quarter1 111 (71 c)
+  Quarter2 101 (71 c)
+  Quarter3 0 (0)
+  Quarter4 0 (0)
+Provider 8 kpi hit 1/4  31.8%
+  Quarter1 77 (22 c)
+  Quarter2 84 (31 c)
+  Quarter3 56 (13 c)
+  Quarter4 63 (23 c)
+
+
+
+##PAYER MIX
+
+```{r}
+table(data$Payer, data$Provider.Name)
+
+#this one used for kpi table
+table(unique$Payer, unique$Provider.Name)
+
+unique <- unique %>%
+   mutate(Payer1 = ifelse(Payer == "Commercial", 1,
+                                            ifelse(Payer == "Medicaid", 1,
+                                                   ifelse(Payer == "Medicare", 1, 0))))
+
+#make graph for unique patients of each type
+ggplot(unique, aes(x = Provider.Name, y = Payer1)) +
+  geom_bar(stat = "identity", aes(fill = Payer))
+
+
+data <- data %>%
+   mutate(Payer1 = ifelse(Payer == "Commercial", 1,
+                                            ifelse(Payer == "Medicaid", 1,
+                                                   ifelse(Payer == "Medicare", 1, 0))))
+#graph of total pateints for each insurance
+ggplot(data, aes(x = Provider.Name, y = Payer1)) +
+  geom_bar(stat = "identity", aes(fill = Payer)) +
+  xlab("") +
+  ylab("Type of Insurance") +
+  ggtitle("Trend in Insurance Type across all Providers") +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata()
+
+
+
+```
+
+##HOW IS NEW ONOCOLOSIGT (PROVIDER 1) DOING
+
+```{r}
+#dataframe filtered to new provider
+onc1 <- data %>%
+  filter(Provider.Name == "Provider 1")
+#regex to allow us to make the payment amount column numerical
+onc1$Payment.Amount <- gsub('\\$', '', onc1$Payment.Amount)
+
+onc1$Payment.Amount <- gsub('\\(', '', onc1$Payment.Amount)
+
+onc1$Payment.Amount <- gsub('\\)', '', onc1$Payment.Amount)
+
+onc1$Payment.Amount <- gsub('\\.00', '.', onc1$Payment.Amount)
+
+onc1$Payment.Amount <- substring(onc1$Payment.Amount, 1, nchar(onc1$Payment.Amount)-1)
+onc1$Payment.Amount <- substring(onc1$Payment.Amount, 1, nchar(onc1$Payment.Amount)-1)
+
+unique(onc1$Payment.Amount )
+
+onc1 <- onc1 %>%
+  mutate(Payment.Amount = as.numeric(Payment.Amount))
+
+class(onc1$Payment.Amount)
+
+unique(onc1$Payment.Amount)
+#sorts the payment amount but not needed?
+#str_sort(unique(onc1$Payment.Amount, numeric = TRUE))
+
+#shows the sum of all the payments based on the quarter
+aggregate(Payment.Amount ~ Quarter.of.Service, onc1, sum)
+#lets us graph the values found in our aggregate
+onc1 <- onc1 %>%
+   mutate(test = ifelse(Quarter.of.Service == "1/1/2022", 603991.5,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 516607,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 372528,
+                                                      ifelse(Quarter.of.Service == "7/1/2021", 362891.5, 0)))))
+#reorders dates correctly
+onc1$Quarter.of.Service <- factor(onc1$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+
+#graph showing the amount of payments to provider 1
+ggplot(onc1, aes(x = Quarter.of.Service, y = test, fill = Provider.Name, group = Provider.Name)) +
+  geom_point(show.legend = FALSE) +
+  geom_line(color = 'indianred3') +
+  xlab("Quarter of Service") +
+  ylab("Payment Amount") +
+  ggtitle("Trends in Payment Earned for Provider 1 per Quarter") +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata()
+
+
+
+#provider 1 new patient visits
+onc1new <- onc1 %>%
+  filter(Service.Subtype == "New Patient Visits - Office")
+
+table(onc1new$Service.Subtype, onc1new$Quarter.of.Service)
+
+onc1new <- onc1new %>%
+   mutate(Service.Subtype1 = ifelse(Quarter.of.Service == "1/1/2022", 68,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 45,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 88,
+                                                      ifelse(Quarter.of.Service == "7/1/2021", 80, 0)))))
+#graph showing trned in new patients
+ggplot(onc1new, aes(x = Quarter.of.Service, y = Service.Subtype1, fill = Service.Subtype, group = Service.Subtype)) +
+  geom_point(show.legend = FALSE) +
+  geom_line(color = 'cornflowerblue') +
+  xlab("Quarter of Service") +
+  ylab("Number of New Patients") +
+  ggtitle("Number of New Patients to Provider 1 over 4 Quarters") +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata()
+
+
+
+
+```
+
+##changes to patient volume from provider 6 and 7 leaving near end of 2021
+
+```{r}
+data$Quarter.of.Service <- factor(data$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+ggplot(data, aes(x = Quarter.of.Service, y = final, fill = Quarter.of.Service)) +
+  geom_bar(stat='identity', show.legend = FALSE) +
+  xlab("Quarter of Service") +
+  ylab("Total Services") +
+  ggtitle("Total Amount of all Services done across all Providers over 4 Quarters") +
+  scale_fill_manual(values = c("lightcoral", "lightseagreen", "skyblue2", "thistle3")) +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata() +
+  scale_y_continuous(labels = comma)
+
+
+table(data$Service.Type, data$Quarter.of.Service)
+
+data <- data %>%
+mutate(final = ifelse(Quarter.of.Service == "1/1/2022", 1,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 1,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 1,
+                                                      ifelse(Quarter.of.Service == "7/1/2021", 1, 0)))))
+```
+
+
+```{r}
+leave671 <- data %>%
+  filter(Service.Type == "Office Visit")
+
+table(leave671$Quarter.of.Service)
+
+leave671 <- leave671 %>%
+   mutate(Service.Type1 = ifelse(Quarter.of.Service == "1/1/2022", 6003,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 6137,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 7230,
+                                                      ifelse(Quarter.of.Service == "7/1/2021", 7049, 0)))))
+
+leave671$Quarter.of.Service <- factor(leave671$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+ggplot(leave671, aes(x=Quarter.of.Service, y=Service.Type1)) +
+  geom_point()
+
+ggplot(data, aes(x = Quarter.of.Service, y = Service.Type)) +
+  geom_bar(stat='identity')
+```
+
+```{r}
+leave672 <- data %>%
+  filter(Service.Type == "Laboratory and Pathology")
+
+table(leave672$Quarter.of.Service)
+
+leave672 <- leave672 %>%
+   mutate(Service.Type1 = ifelse(Quarter.of.Service == "1/1/2022", 619,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 559,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 716,
+                                                      ifelse(Quarter.of.Service == "7/1/2021", 648, 0)))))
+
+leave672$Quarter.of.Service <- factor(leave672$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+ggplot(leave672, aes(x=Quarter.of.Service, y=Service.Type1)) +
+  geom_point()
+```
+
+```{r}
+leave673 <- data %>%
+  filter(Service.Type == "Drug Administrations")
+
+table(leave673$Quarter.of.Service)
+
+leave673 <- leave673 %>%
+   mutate(Service.Type1 = ifelse(Quarter.of.Service == "1/1/2022", 4292,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 4431,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 5406,
+                                                      ifelse(Quarter.of.Service == "7/1/2021", 4899, 0)))))
+
+leave673$Quarter.of.Service <- factor(leave673$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+ggplot(leave673, aes(x=Quarter.of.Service, y=Service.Type1)) +
+  geom_point()	
+
+```
+
+
+```{r}
+table(data$Service.Type, data$Provider.Name, data$Quarter.of.Service)
+
+  data <- data %>%
+     mutate(PatientVolume = ifelse(Provider.Name == "Provider 1" & Quarter.of.Service == "4/1/2021", 1233,
+                             ifelse(Provider.Name == "Provider 1" & Quarter.of.Service == "7/1/2021", 1205,
+                             ifelse(Provider.Name == "Provider 1" & Quarter.of.Service == "10/1/2021", 1872,
+                             ifelse(Provider.Name == "Provider 1" & Quarter.of.Service == "1/1/2022", 2207,
+                              ifelse(Provider.Name == "Provider 2" & Quarter.of.Service == "4/1/2021", 1658,
+                              ifelse(Provider.Name == "Provider 2" & Quarter.of.Service == "7/1/2021", 1781,
+                              ifelse(Provider.Name == "Provider 2" & Quarter.of.Service == "10/1/2021", 1885,
+                              ifelse(Provider.Name == "Provider 2" & Quarter.of.Service == "1/1/2022", 2699,                  
+                                ifelse(Provider.Name == "Provider 3" & Quarter.of.Service == "4/1/2021", 2002,
+                                ifelse(Provider.Name == "Provider 3" & Quarter.of.Service == "7/1/2021", 1337,
+                                ifelse(Provider.Name == "Provider 3" & Quarter.of.Service == "10/1/2021", 1494,
+                                ifelse(Provider.Name == "Provider 3" & Quarter.of.Service == "1/1/2022", 1491,      
+                                  ifelse(Provider.Name == "Provider 4" & Quarter.of.Service == "4/1/2021", 1274,
+                                  ifelse(Provider.Name == "Provider 4" & Quarter.of.Service == "7/1/2021", 1173,
+                                  ifelse(Provider.Name == "Provider 4" & Quarter.of.Service == "10/1/2021", 1033,
+                                  ifelse(Provider.Name == "Provider 4" & Quarter.of.Service == "1/1/2022", 1092,
+                                    ifelse(Provider.Name == "Provider 5" & Quarter.of.Service == "4/1/2021", 1152,
+                                    ifelse(Provider.Name == "Provider 5" & Quarter.of.Service == "7/1/2021", 1037,
+                                    ifelse(Provider.Name == "Provider 5" & Quarter.of.Service == "10/1/2021", 1995,
+                                    ifelse(Provider.Name == "Provider 5" & Quarter.of.Service == "1/1/2022", 2186,
+                                      ifelse(Provider.Name == "Provider 6" & Quarter.of.Service == "4/1/2021", 1723,
+                                      ifelse(Provider.Name == "Provider 6" & Quarter.of.Service == "7/1/2021", 1531,
+                                      ifelse(Provider.Name == "Provider 6" & Quarter.of.Service == "10/1/2021", 1149,
+                                      ifelse(Provider.Name == "Provider 6" & Quarter.of.Service == "1/1/2022", 0,
+                                        ifelse(Provider.Name == "Provider 7" & Quarter.of.Service == "4/1/2021", 2955,
+                                        ifelse(Provider.Name == "Provider 7" & Quarter.of.Service == "7/1/2021", 3066,
+                                        ifelse(Provider.Name == "Provider 7" & Quarter.of.Service == "10/1/2021", 450,
+                                        ifelse(Provider.Name == "Provider 7" & Quarter.of.Service == "1/1/2022", 0,
+                                          ifelse(Provider.Name == "Provider 8" & Quarter.of.Service == "4/1/2021", 1355,
+                                          ifelse(Provider.Name == "Provider 8" & Quarter.of.Service == "7/1/2021", 1466,
+                                          ifelse(Provider.Name == "Provider 8" & Quarter.of.Service == "10/1/2021", 1249,
+                                          ifelse(Provider.Name == "Provider 8" & Quarter.of.Service == "1/1/2022", 1239, 0)))))))))))))))))))))))))))))))))
+
+data$Quarter.of.Service <- factor(data$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))                                     
+                                     
+                                  
+#graph showing the change in patient volume per provider through the quarters
+ggplot(data, aes(x = Quarter.of.Service, y = PatientVolume, color = Provider.Name, group = Provider.Name)) +
+  geom_point() +
+  geom_line() +
+  xlab("Quarter of Service") +
+  ylab("Total Patient Volume") +
+  ggtitle("Patient Volume Trend per all Providers across 4 Quarters") +
+  scale_color_brewer(palette = "Dark2", name = "") +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata()
+
+
+
+```
+
+
+
+##trends in overall patient voulme and payment
+
+```{r}
+
+table(data$Service.Type, data$Quarter.of.Service)
+
+data <- data %>%
+   mutate(Service.Type11 = ifelse(Quarter.of.Service == "1/1/2022", 10914,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 11127,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 13352,
+                                                      ifelse(Quarter.of.Service == "7/1/2021", 12596, 0)))))
+
+data$Quarter.of.Service <- factor(data$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+#graph of overall clinic visits 
+ggplot(data, aes(x = Quarter.of.Service, y = Service.Type11, fill = Service.Type, group = Service.Type)) +
+  geom_point(show.legend = FALSE) +
+  geom_line(color = 'mediumpurple2') +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata() +
+  xlab("Quarter of Service") +
+  ylab("Overall Patient Volume") +
+  ggtitle("Trends in Overall Patient Volume across all Providers")
+
+
+```
+
+
+```{r}
+#dataframe filtered to new provider
+money <- data
+ 
+#regex to allow us to make the payment amount column numerical
+money$Payment.Amount <- gsub('\\$', '', money$Payment.Amount)
+
+money$Payment.Amount <- gsub('\\(', '', money$Payment.Amount)
+
+money$Payment.Amount <- gsub('\\)', '', money$Payment.Amount)
+
+money$Payment.Amount <- gsub('\\.00', '.', money$Payment.Amount)
+
+money$Payment.Amount <- substring(money$Payment.Amount, 1, nchar(money$Payment.Amount)-1)
+money$Payment.Amount <- substring(money$Payment.Amount, 1, nchar(money$Payment.Amount)-1)
+
+unique(money$Payment.Amount )
+
+money <- money %>%
+  mutate(Payment.Amount = as.numeric(Payment.Amount))
+
+class(money$Payment.Amount)
+
+unique(money$Payment.Amount)
+
+#shows the sum of all the payments based on the quarter
+aggregate(Payment.Amount ~ Quarter.of.Service, money, sum)
+#lets us graph the values found in our aggregate
+money <- money %>%
+   mutate(test = ifelse(Quarter.of.Service == "1/1/2022", 3306360,
+                                            ifelse(Quarter.of.Service == "10/1/2021", 3358102,
+                                                   ifelse(Quarter.of.Service == "4/1/2021", 4040660,
+                                                      ifelse(Quarter.of.Service == "7/1/2021", 3814279, 0)))))
+#reorders dates correctly
+money$Quarter.of.Service <- factor(money$Quarter.of.Service, levels = c("4/1/2021", "7/1/2021", "10/1/2021", "1/1/2022"))
+
+#graph showing overalltrend in payments
+ggplot(money, aes(x = Quarter.of.Service, y = test, fill = Service.Type, group = Service.Type)) +
+  geom_point(show.legend = FALSE) +
+  geom_line(color = 'violetred2') +
+  theme(plot.title = element_text(hjust = 0.4)) +
+  theme_stata() +
+  xlab("Quarter of Service") +
+  ylab("Overall Payment Recieved") +
+  ggtitle("Trends in Overall Payment Recieved across all Providers")
+
+
+```
